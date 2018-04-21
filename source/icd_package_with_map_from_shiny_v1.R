@@ -58,7 +58,6 @@ dt2 <- Reduce("+", dtt)
 head(dt2)
 sum(rowSums(dt2))
 
-
 # Part III: load MIDAS----
 load("E:/MIDAS/midas15_clean.RData")
 midas15
