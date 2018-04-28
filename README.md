@@ -16,7 +16,7 @@
 ## Daily Logs<a name="log"></a>
 ### 04/27/2018
 * Added ICD-9 procedure codes. NOTE: 'major' category is just a copy of 'sub-chapter', too many labels to create by hand. Find a full table online and use it.
-* Opend new issue [#143](https://github.com/jackwasey/icd/issues/143) on J. Wasey's 'icd' GitHub page asking for procedure codes
+* Opened new issue [#143](https://github.com/jackwasey/icd/issues/143) on J. Wasey's 'icd' GitHub page asking for procedure codes
 
 ### 04/06/2018
 * Project created
