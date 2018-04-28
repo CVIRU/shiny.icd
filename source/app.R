@@ -72,6 +72,7 @@ server <- function(input, output) {
       dt0 <- icd9cm_hierarchy
       names(dt0)[names(dt0) == "three_digit"] <- "sub_code"
     } else {
+      # Data source: icd_package_procedure_icd9_v1.R
       load("icd9cm_sg_hierarchy.RData")
       dt0 <- icd9cm_sg_hierarchy
     }
