@@ -23,7 +23,7 @@
 
 ## References<a name="ref"></a>
 ### ICD-9 Code Hierarchy
-[icd9data.com](http://www.icd9data.com/2012/Volume3/default.htm])
+[icd9data.com](http://www.icd9data.com/2012/Volume3/default.htm)
 
 ### Data Source
 [Center for Medicare and Medicaid](https://www.cms.gov/Medicare/Coding/ICD9ProviderDiagnosticCodes/codes.html)
