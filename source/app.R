@@ -6,6 +6,9 @@
 # | Modified: 04/03/2018, DS: replaced text boxes wit DT table. Download only        |
 # |                           SELECTED rows (all selected by default)                |
 # |                           Output a map file, i.e. R list with mapped diagnoses   |
+# |           04/27/2018, DS: Added ICD-9 procedure codes. NOTE: 'major' category is |
+# |                           just a copy of 'sub-chapter', too many labels to create|
+# |                           by hand. Find a full table online and use it.          |
 # | ToDo: Keep selected diagnoses after switching to the next category               |
 # |----------------------------------------------------------------------------------|
 options(stringsAsFactors = FALSE)
