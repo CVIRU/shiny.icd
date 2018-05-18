@@ -1,0 +1,13 @@
+name: ICD9
+title: ICD9
+username:
+account: sargdavid
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 332816
+bundleId: 1344391
+url: https://sargdavid.shinyapps.io/ICD9/
+when: 1524886490.35839
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: icd_package_example.R|icd_package_procedure_icd9_v1.R|icd_package_with_map_from_shiny_v1.R|icd9_app_v1.R|midas_data_simulation_v1.R
