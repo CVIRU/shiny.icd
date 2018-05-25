@@ -9,20 +9,31 @@
 # |           04/27/2018, DS: Added ICD-9 procedure codes. NOTE: 'major' category is |
 # |                           just a copy of 'sub-chapter', too many labels to create|
 # |                           by hand. Find a full table online and use it.          |
-# |           05/24/2018, DS: Switched to icd Version 3.2.0 (developer) and icd.data |
-# |                           version 1.0.1. Added functions to merge different      |
-# |                           versions of ICD data (currently, V23-V32).             |
 # | ToDo: Keep selected diagnoses after switching to the next category               |
 # |----------------------------------------------------------------------------------|
 options(stringsAsFactors = FALSE)
 
 # devtools::install_github("jackwasey/icd")
-# devtools::install_github("jackwasey/icd.data")
-# require(shiny)
 require(icd)
 require(DT)
-source("icd9_dx_get_data_v1.R")
-source("icd9_sg_get_data_v1.R")
+# dt0 <- icd9cm_hierarchy
+# dt0$short_desc <- NULL
+# 
+# # Display ICD codes along with labels----
+# dt1 <- dt0
+# dt1$long_desc <- paste(dt1$code,
+#                        dt1$long_desc,
+#                        sep = ":")
+# dt1$major <- paste(dt1$sub_code,
+#                        dt1$major,
+#                        sep = ":")
+
+# # TEST: bypass user interface!
+# input <- list()
+# input$chapter = unique(as.character(dt1$chapter))[1]
+# input$subchapter = unique(as.character(dt1$sub_chapter[dt1$chapter == input$chapter]))[1]
+# input$major = unique(as.character(dt1$major[dt1$sub_chapter == input$subchapter]))[2]
+# input$dx = unique(as.character(dt1$long_desc[dt1$major == input$major]))[1]
 
 ui <- fluidPage(
   titlePanel("ICD-9 Clinical Modification Codes & Diagnoses"),
@@ -33,14 +44,10 @@ ui <- fluidPage(
                    choices = c("Diagnoses",
                                "Procedures"),
                    selected = "Diagnoses"),
-      selectInput(inputId = "icd9_version",
-                   label = "ICD-9 Version",
-                   choices = available_icd9_versions()),
       uiOutput(outputId = "chapterIn"),
       uiOutput(outputId = "subchapterIn"),
       uiOutput(outputId = "majorIn"),
-      uiOutput(outputId = "dxIn"),
-      checkboxInput("bar", "Select All")
+      uiOutput(outputId = "dxIn")
     ),
     mainPanel(
       DT:: dataTableOutput("tbl"),
@@ -54,17 +61,25 @@ ui <- fluidPage(
                    label = "Download Selected Rows"),
       br(),
       downloadLink(outputId = "downloadMap",
-                   label = "Download Map of Selected Rows")
+                   label = "Download Map of Selected Rows"),
+      br(),
+      actionButton(inputId = "reset",
+                   label = "Reset Table",
+                   style = "background-color: #FF0000")
     )
   )
 )
 
-server <- function(input, output, session) {
+server <- function(input, output) {
   dt0f <- reactive({
+    print(input$dataset)
     if(input$dataset == "Diagnoses"){
-      dt0 <- icd9cm_merge_version_dx(input$icd9_version)
+      dt0 <- icd9cm_hierarchy
+      names(dt0)[names(dt0) == "three_digit"] <- "sub_code"
     } else {
-      dt0 <- icd9cm_merge_version_sg(input$icd9_version)
+      # Data source: icd_package_procedure_icd9_v1.R
+      load("icd9cm_sg_hierarchy.RData")
+      dt0 <- icd9cm_sg_hierarchy
     }
     dt0$short_desc <- NULL
     dt0
@@ -76,7 +91,7 @@ server <- function(input, output, session) {
     dt1$long_desc <- paste(dt1$code,
                            dt1$long_desc,
                            sep = ":")
-    dt1$major <- paste(dt1$major_code,
+    dt1$major <- paste(dt1$sub_code,
                        dt1$major,
                        sep = ":")
     dt1
@@ -109,13 +124,6 @@ server <- function(input, output, session) {
                 label = "Diagnosis",
                 choices = unique(as.character(dt1$long_desc[dt1$major == input$major])),
                 multiple = TRUE)
-  })
-  
-  observeEvent(input$bar,{
-    dt1 <- dt1f()
-    updateSelectInput(session = session, 
-                      inputId = "dx",
-                      selected = if (input$bar) unique(as.character(dt1$long_desc)))
   })
 
   # Source: https://yihui.shinyapps.io/DT-rows/
@@ -183,6 +191,14 @@ server <- function(input, output, session) {
            file = file)
     }
   )
+
+  # Reset diagnoses table
+  observeEvent(input$reset, {
+    if (exists("dtt")) {
+      rm(dtt,
+         envir = .GlobalEnv)
+    }
+  })
 }
 
 shinyApp(ui, server)

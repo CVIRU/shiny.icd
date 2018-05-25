@@ -14,6 +14,9 @@
 1. ***app.R***: current version of the Shiny app    
 
 ## Daily Logs<a name="log"></a>
+### 05/24/2018
+* Switched to icd Version 3.2.0 (developer) and icd.data version 1.0.1. Added functions to merge different versions of ICD data (currently, V23-V32). did the same for ICD-9 procedure codes sourcing form Excel files and manually creating chapters, etc.
+
 ### 04/27/2018
 * Added ICD-9 procedure codes. NOTE: 'major' category is just a copy of 'sub-chapter', too many labels to create by hand. Find a full table online and use it.
 * Opened new issue [#143](https://github.com/jackwasey/icd/issues/143) on J. Wasey's 'icd' GitHub page asking for procedure codes

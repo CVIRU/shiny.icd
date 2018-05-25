@@ -50,7 +50,7 @@ write.csv(dt1,
 dt1 <- icd9cm_billable
 names(dt1)
 head(dt1[[6]])
-dt1 <- rbindlist(dt1)
+  dt1 <- rbindlist(dt1)
 dt1 <- do.call(rbindlist)
 dt1
 
