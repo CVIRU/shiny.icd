@@ -14,6 +14,10 @@
 1. ***app.R***: current version of the Shiny app    
 
 ## Daily Logs<a name="log"></a>
+### 05/25/2018
+* Cleaned ICD-9 diagnosis and procedure codes for shiny app      
+* Created *icd9_pcs_chapters.RData*, *icd9_pcs_chapters.RData* and *icd9_pcs_chapters.RData* data and [uploaded to GitHub](https://github.com/jackwasey/icd.data/issues/3)
+
 ### 05/24/2018
 * Switched to icd Version 3.2.0 (developer) and icd.data version 1.0.1. Added functions to merge different versions of ICD data (currently, V23-V32). did the same for ICD-9 procedure codes sourcing form Excel files and manually creating chapters, etc.
 

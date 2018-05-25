@@ -5,12 +5,13 @@
 # | Created: 04/27/2018                                                              |
 # | Modified: 05/24/2018, DS: standard way of getting the codes                      |
 # |----------------------------------------------------------------------------------|
+options(stringsAsFactors = FALSE)
 require(foreach)
 require(xlsx)
 
 # Get all nonbillable ICD9 PROC codes and labels----
-icd9cm_sg_get_nonbillable <- function() {
-  icd9_sg_chapters <- data.frame(chapter = c("Procedures And Interventions , Not Elsewhere Classified",
+icd9cm_pcs_get_nonbillable <- function() {
+  icd9_pcs_chapters <- data.frame(chapter = c("Procedures And Interventions , Not Elsewhere Classified",
                                              "Operations On The Nervous System",
                                              "Operations On The Endocrine System",
                                              "Operations On The Eye",
@@ -65,7 +66,7 @@ icd9cm_sg_get_nonbillable <- function() {
                                          "86",
                                          "99"))
   
-  icd9_sg_sub_chapters <- data.frame(sub_chapter = c("Procedures And Interventions , Not Elsewhere Classified",
+  icd9_pcs_sub_chapters <- data.frame(sub_chapter = c("Procedures And Interventions , Not Elsewhere Classified",
                                                      
                                                      "Incision And Excision Of Skull, Brain, And Cerebral Meninges",
                                                      "Other Operations On Skull, Brain, And Cerebral Meninges",
@@ -185,43 +186,76 @@ icd9cm_sg_get_nonbillable <- function() {
                                      start = substr(100:199, 2, 3),
                                      end = substr(100:199, 2, 3))
   out <- list()
-  for (i in 1:nrow(icd9_sg_sub_chapters)) {
-    ndx.chap <- (icd9_sg_chapters$start <= icd9_sg_sub_chapters$start[i] &
-                   icd9_sg_chapters$end >= icd9_sg_sub_chapters$start[i])
-    out[[i]] <- data.frame(chapter = icd9_sg_chapters$chapter[ndx.chap],
-                           chapter_start = icd9_sg_chapters$start[ndx.chap],
-                           chapter_end = icd9_sg_chapters$end[ndx.chap],
-                           sub_chapter = icd9_sg_sub_chapters$sub_chapter[i],
-                           sub_chapter_start = icd9_sg_sub_chapters$start[i],
-                           sub_chapter_end = icd9_sg_sub_chapters$end[i],
-                           major = icd9_sg_sub_chapters$sub_chapter[i],
-                           major_code = icd9_sg_sub_chapters$start[i])
+  for (i in 1:nrow(icd9_pcs_sub_chapters)) {
+    ndx.chap <- (icd9_pcs_chapters$start <= icd9_pcs_sub_chapters$start[i] &
+                   icd9_pcs_chapters$end >= icd9_pcs_sub_chapters$start[i])
+    out[[i]] <- data.frame(chapter = icd9_pcs_chapters$chapter[ndx.chap],
+                           chapter_start = icd9_pcs_chapters$start[ndx.chap],
+                           chapter_end = icd9_pcs_chapters$end[ndx.chap],
+                           sub_chapter = icd9_pcs_sub_chapters$sub_chapter[i],
+                           sub_chapter_start = icd9_pcs_sub_chapters$start[i],
+                           sub_chapter_end = icd9_pcs_sub_chapters$end[i],
+                           major = icd9_pcs_sub_chapters$sub_chapter[i],
+                           major_code = icd9_pcs_sub_chapters$start[i])
   }
-  icd9cm_sg_nonbillable <- data.frame(do.call("rbind", out))
-  return(icd9cm_sg_nonbillable)
+  icd9cm_pcs_nonbillable <- data.frame(do.call("rbind", out))
+  
+  # # Save data as lists and share with Jack; ONLY RUN IT ONCE!----
+  # # a. Chapters----
+  # icd9_pcs_chapters <- split(x = as.matrix(icd9_pcs_chapters[, -1]),
+  #                            f = factor(icd9_pcs_chapters$chapter,
+  #                                       levels = icd9_pcs_chapters$chapter))
+  # icd9_pcs_chapters <- lapply(icd9_pcs_chapters,
+  #                             function(a) {
+  #                               names(a) <- c("start",
+  #                                             "end")
+  #                               return(a)
+  #                             })
+  # save(icd9_pcs_chapters,
+  #      file = "tmp/icd9_pcs_chapters.RData")
+  # 
+  # # b. Sub-Chapters----
+  # icd9_pcs_sub_chapters <- split(x = as.matrix(icd9_pcs_sub_chapters[, -1]),
+  #                                f = factor(icd9_pcs_sub_chapters$sub_chapter,
+  #                                           levels = icd9_pcs_sub_chapters$sub_chapter))
+  # icd9_pcs_sub_chapters <- lapply(icd9_pcs_sub_chapters,
+  #                             function(a) {
+  #                               names(a) <- c("start",
+  #                                             "end")
+  #                               return(a)
+  #                             })
+  # save(icd9_pcs_sub_chapters,
+  #      file = "tmp/icd9_pcs_sub_chapters.RData")
+  
+  return(icd9cm_pcs_nonbillable)
 }
 
 # Get merged data for a given ICD-9 version----
-icd9cm_merge_version_sg <- function(icd9_version) {
+icd9cm_merge_version_pcs <- function(icd9_version) {
   # Load data----
-  lfile <- dir("original")
+  lfile <- dir("source/original")
   lfile
   
-  icd9cm_sg_billable <- list()
+  icd9cm_pcs_billable <- list()
   foreach(i = 1:length(lfile)) %do% {
-    icd9cm_sg_billable[[i]] <- read.xlsx2(file = file.path("original",
+    icd9cm_pcs_billable[[i]] <- read.xlsx2(file = file.path("source/original",
                                                            lfile[i]),
-                                          sheetIndex = 1)[, 1:3]
-    colnames(icd9cm_sg_billable[[i]]) <- c("code",
-                                           "long_desc",
-                                           "short_desc")
+                                          sheetIndex = 1)[, c(1, 3, 2)]
+    colnames(icd9cm_pcs_billable[[i]]) <- c("code",
+                                            "short_desc",
+                                           "long_desc")
   }
-  names(icd9cm_sg_billable) <- substr(x = lfile,
+  names(icd9cm_pcs_billable) <- substr(x = lfile,
                                       start = 4,
                                       stop = 5)
   
-  icd9cm_nonbillable <- icd9cm_sg_get_nonbillable()
-  icd9cm_billable_vx <- icd9cm_sg_billable[[which(names(icd9cm_sg_billable) == icd9_version)]]
+  # # Save data as lists and share with Jack; ONLY RUN IT ONCE!----
+  # head(icd9cm_pcs_billable[[1]])
+  # save(icd9cm_pcs_billable,
+  #      file = "tmp/icd9cm_pcs_billable.RData")
+  
+  icd9cm_nonbillable <- icd9cm_pcs_get_nonbillable()
+  icd9cm_billable_vx <- icd9cm_pcs_billable[[which(names(icd9cm_pcs_billable) == icd9_version)]]
   
   icd9cm_billable_vx$major_code <- substr(icd9cm_billable_vx$code, 1, 2)
   icd9cm_billable_vx$major_code[substr(icd9cm_billable_vx$code, 1, 1) == "E"] <- 

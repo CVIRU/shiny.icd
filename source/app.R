@@ -24,6 +24,16 @@ require(DT)
 source("icd9_dx_get_data_v1.R")
 source("icd9_sg_get_data_v1.R")
 
+# # TEST: bypass user interface!
+# source("source/icd9_dx_get_data_v1.R")
+# source("source/icd9_sg_get_data_v1.R")
+# input <- list()
+# dt1 <- icd9cm_merge_version_dx(32)
+# input$chapter = unique(as.character(dt1$chapter))[4]
+# input$subchapter = unique(as.character(dt1$sub_chapter[dt1$chapter == input$chapter]))[1]
+# input$major = unique(as.character(dt1$major[dt1$sub_chapter == input$subchapter]))[2]
+# input$dx = unique(as.character(dt1$long_desc[dt1$major == input$major]))[1]
+
 ui <- fluidPage(
   titlePanel("ICD-9 Clinical Modification Codes & Diagnoses"),
   sidebarLayout(
@@ -40,7 +50,7 @@ ui <- fluidPage(
       uiOutput(outputId = "subchapterIn"),
       uiOutput(outputId = "majorIn"),
       uiOutput(outputId = "dxIn"),
-      checkboxInput("bar", "Select All")
+      checkboxInput("selectAll", "Select All")
     ),
     mainPanel(
       DT:: dataTableOutput("tbl"),
@@ -64,7 +74,7 @@ server <- function(input, output, session) {
     if(input$dataset == "Diagnoses"){
       dt0 <- icd9cm_merge_version_dx(input$icd9_version)
     } else {
-      dt0 <- icd9cm_merge_version_sg(input$icd9_version)
+      dt0 <- icd9cm_merge_version_pcs(input$icd9_version)
     }
     dt0$short_desc <- NULL
     dt0
@@ -111,11 +121,15 @@ server <- function(input, output, session) {
                 multiple = TRUE)
   })
   
-  observeEvent(input$bar,{
+  observeEvent(input$selectAll,{
     dt1 <- dt1f()
     updateSelectInput(session = session, 
                       inputId = "dx",
-                      selected = if (input$bar) unique(as.character(dt1$long_desc)))
+                      selected = if(input$selectAll){
+                        unique(as.character(dt1$long_desc))
+                      } else {
+                        ""
+                      })
   })
 
   # Source: https://yihui.shinyapps.io/DT-rows/
