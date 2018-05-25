@@ -233,12 +233,12 @@ icd9cm_pcs_get_nonbillable <- function() {
 # Get merged data for a given ICD-9 version----
 icd9cm_merge_version_pcs <- function(icd9_version) {
   # Load data----
-  lfile <- dir("source/original")
+  lfile <- dir("original")
   lfile
   
   icd9cm_pcs_billable <- list()
   foreach(i = 1:length(lfile)) %do% {
-    icd9cm_pcs_billable[[i]] <- read.xlsx2(file = file.path("source/original",
+    icd9cm_pcs_billable[[i]] <- read.xlsx2(file = file.path("original",
                                                            lfile[i]),
                                           sheetIndex = 1)[, c(1, 3, 2)]
     colnames(icd9cm_pcs_billable[[i]]) <- c("code",
