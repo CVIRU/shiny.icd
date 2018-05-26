@@ -1,0 +1,13 @@
+name: ShinyICD
+title: ShinyICD
+username:
+account: sargdavid
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 349121
+bundleId: 1393849
+url: https://sargdavid.shinyapps.io/ShinyICD/
+when: 1527297752.18212
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: icd9_app_v1.R|icd9_app_v2.R|midas_data_simulation_v1.R|Test/app.R
