@@ -21,6 +21,7 @@ options(stringsAsFactors = FALSE)
 # require(shiny)
 require(icd)
 require(DT)
+require(shiny)
 source("icd9_dx_get_data_v1.R")
 source("icd9_sg_get_data_v1.R")
 
