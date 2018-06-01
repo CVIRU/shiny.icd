@@ -18,7 +18,7 @@ options(stringsAsFactors = FALSE)
 
 # devtools::install_github("jackwasey/icd")
 # devtools::install_github("jackwasey/icd.data")
-# require(shiny)
+require(shiny)
 require(icd)
 require(DT)
 source("icd9_dx_get_data_v1.R")

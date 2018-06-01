@@ -1,0 +1,12 @@
+name: ShinyICD
+title: ShinyICD
+username:
+account: sargdavid
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 345661
+bundleId: 1382279
+url: https://sargdavid.shinyapps.io/ShinyICD/
+when: 1526753837.79701
+asMultiple: FALSE
+asStatic: FALSE
