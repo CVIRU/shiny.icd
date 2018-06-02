@@ -73,6 +73,9 @@ server <- function(input, output, session) {
   dt0f <- reactive({
     if(input$dataset == "Diagnoses"){
       dt0 <- icd9cm_merge_version_dx(input$icd9_version)
+      # TEMPORARY PATCH: see Issue4: https://github.com/CVIRU/shiny.icd/issues/4
+      # Why dose this work?
+      dt0$long_desc[dt0$code == "0413"] <- "Friedländer's bacillus infection in conditions classified elsewhere and of unspecified site"
     } else {
       dt0 <- icd9cm_merge_version_pcs(input$icd9_version)
     }
@@ -138,7 +141,8 @@ server <- function(input, output, session) {
     dt1 <- dt1f()
     DT::datatable(unique(dt0[dt1$long_desc %in% input$dx, ]),
                   options = list(pageLength = 10),
-                  selection = list(mode = "multiple"))
+                  selection = list(mode = "multiple"),
+                  rownames = FALSE)
   })
 
   # Source: http://shiny.rstudio.com/articles/action-buttons.html
@@ -157,7 +161,8 @@ server <- function(input, output, session) {
                     options = list(pageLength = 10),
                     selection = list(mode = "multiple",
                                      selected = 1:nrow(dtt),
-                                     target = "row"))
+                                     target = "row"),
+                    rownames = FALSE)
     })
   })
 

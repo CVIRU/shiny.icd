@@ -14,6 +14,9 @@
 1. ***app.R***: current version of the Shiny app    
 
 ## Daily Logs<a name="log"></a>
+### 06/01/2018
+* Temporaty patch for DX 0413. See GitHub Issue 4.
+
 ### 05/25/2018
 * Cleaned ICD-9 diagnosis and procedure codes for shiny app      
 * Created *icd9_pcs_chapters.RData*, *icd9_pcs_chapters.RData* and *icd9_pcs_chapters.RData* data and [uploaded to GitHub](https://github.com/jackwasey/icd.data/issues/3)
