@@ -13,7 +13,6 @@ dt1 <- fread("tmp/Aortic Stenosis ICD9 Legend.csv")
 dt1
 
 icd::icd_comorbid(x = dt1$ICD9Coded)
-icd::
 
 pts <- icd_long_data(visit_name = c("2", "1", "2", "3", "3"),
                      icd9 = c("39891", "40110", "09322", "41514", "39891"))
@@ -51,7 +50,7 @@ write.csv(dt1,
 dt1 <- icd9cm_billable
 names(dt1)
 head(dt1[[6]])
-dt1 <- rbindlist(dt1)
+  dt1 <- rbindlist(dt1)
 dt1 <- do.call(rbindlist)
 dt1
 
