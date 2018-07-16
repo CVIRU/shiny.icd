@@ -1,15 +1,13 @@
 # |----------------------------------------------------------------------------------|
 # | Project: ICD-9 Shiny App                                                         |
 # | Script: Make chapter and subchapter objects for ICD9 procedure codes 9manually)  |
-# | Authors: Davit Sargsyan                                                          |   
+# | Authors: Davit Sargsyan                                                          |
 # | Created: 04/27/2018                                                              |
 # | Modified: 05/24/2018, DS: standard way of getting the codes                      |
 # |----------------------------------------------------------------------------------|
-options(stringsAsFactors = FALSE)
-require(foreach)
-require(xlsx)
 
-# Get all nonbillable ICD9 PROC codes and labels----
+#' Get all nonbillable ICD9 PROC codes and labels
+#' @export
 icd9cm_pcs_get_nonbillable <- function() {
   icd9_pcs_chapters <- data.frame(chapter = c("Procedures And Interventions , Not Elsewhere Classified",
                                              "Operations On The Nervous System",
@@ -65,18 +63,18 @@ icd9cm_pcs_get_nonbillable <- function() {
                                          "84",
                                          "86",
                                          "99"))
-  
+
   icd9_pcs_sub_chapters <- data.frame(sub_chapter = c("Procedures And Interventions , Not Elsewhere Classified",
-                                                     
+
                                                      "Incision And Excision Of Skull, Brain, And Cerebral Meninges",
                                                      "Other Operations On Skull, Brain, And Cerebral Meninges",
                                                      "Operations On Spinal Cord And Spinal Canal Structures",
                                                      "Operations On Cranial And Peripheral Nerves",
                                                      "Operations On Sympathetic Nerves Or Ganglia",
-                                                     
+
                                                      "Operations On Thyroid And Parathyroid Glands",
                                                      "Operations On Other Endocrine Glands",
-                                                     
+
                                                      "Operations On Eyelids",
                                                      "Operations On Lacrimal System",
                                                      "Operations On Conjunctiva",
@@ -86,13 +84,13 @@ icd9cm_pcs_get_nonbillable <- function() {
                                                      "Operations On Retina, Choroid, Vitreous, And Posterior Chamber",
                                                      "Operations On Extraocular Muscles",
                                                      "Operations On Orbit And Eyeball",
-                                                     
+
                                                      "Other Miscellaneous Procedures",
-                                                     
+
                                                      "Operations On External Ear",
                                                      "Reconstructive Operations On Middle Ear",
                                                      "Other Operations On Middle And Inner Ear",
-                                                     
+
                                                      "Operation On Nose",
                                                      "Operations On Nasal Sinuses",
                                                      "Removal And Restoration Of Teeth",
@@ -102,22 +100,22 @@ icd9cm_pcs_get_nonbillable <- function() {
                                                      "Other Operations On Mouth And Face",
                                                      "Operations On Tonsils And Adenoids",
                                                      "Operation On Pharynx",
-                                                     
+
                                                      "Excision Of Larynx",
                                                      "Other Operations On Larynx And Trachea",
                                                      "Excision Of Lung And Bronchus",
                                                      "Other Operations On Lung And Bronchus",
                                                      "Operations On Chest Wall, Pleura, Mediastinum, And Diaphragm",
-                                                     
+
                                                      "Operations On Valves And Septa Of Heart",
                                                      "Operations On Vessels Of Heart",
                                                      "Other Operations On Heart And Pericardium",
                                                      "Incision, Excision, And Occlusion Of Vessels",
                                                      "Other Operations On Vessels",
-                                                     
+
                                                      "Operations On Lymphatic System",
                                                      "Operations On Bone Marrow And Spleen",
-                                                     
+
                                                      "Operations On Esophagus",
                                                      "Incision And Excision Of Stomach",
                                                      "Other Operations On Stomach",
@@ -131,19 +129,19 @@ icd9cm_pcs_get_nonbillable <- function() {
                                                      "Operations On Pancreas",
                                                      "Repair Of Hernia",
                                                      "Other Operations On Abdominal Region",
-                                                     
+
                                                      "Operations On Kidney",
                                                      "Operations On Ureter",
                                                      "Operations On Urinary Bladder",
                                                      "Operations On Urethra",
                                                      "Other Operations On Urinary Tract",
-                                                     
+
                                                      "Operations On Prostate And Seminal Vesicles",
                                                      "Operations On Scrotum And Tunica Vaginalis",
                                                      "Operations On Testes",
                                                      "Operations On Spermatic Cord, Epididymis, And Vas Deferens",
                                                      "Operations On Penis",
-                                                     
+
                                                      "Operations On Ovary",
                                                      "Operations On Fallopian Tubes",
                                                      "Operations On Cervix",
@@ -151,12 +149,12 @@ icd9cm_pcs_get_nonbillable <- function() {
                                                      "Other Operations On Uterus And Supporting Structures",
                                                      "Operations On Vagina And Cul-De-Sac",
                                                      "Operations On Vulva And Perineum",
-                                                     
+
                                                      "Forceps, Vacuum, And Breech Delivery",
                                                      "Other Procedures Inducing Or Assisting Delivery",
                                                      "Cesarean Section And Removal Of Fetus",
                                                      "Other Obstetric Operations",
-                                                     
+
                                                      "Operations On Facial Bones And Joints",
                                                      "Incision, Excision, And Division Of Other Bones",
                                                      "Other Operations On Bones, Except Facial Bones",
@@ -166,10 +164,10 @@ icd9cm_pcs_get_nonbillable <- function() {
                                                      "Operations On Muscle, Tendon, And Fascia Of Hand",
                                                      "Operations On Muscle, Tendon, Fascia, And Bursa, Except Hand",
                                                      "Other Procedures On Musculoskeletal System",
-                                                     
+
                                                      "Operations On The Breast",
                                                      "Operations On Skin And Subcutaneous Tissue",
-                                                     
+
                                                      "Diagnostic Radiology",
                                                      "Other Diagnostic Radiology And Related Techniques",
                                                      "Interview, Evaluation, Consultation, And Examination",
@@ -199,7 +197,7 @@ icd9cm_pcs_get_nonbillable <- function() {
                            major_code = icd9_pcs_sub_chapters$start[i])
   }
   icd9cm_pcs_nonbillable <- data.frame(do.call("rbind", out))
-  
+
   # # Save data as lists and share with Jack; ONLY RUN IT ONCE!----
   # # a. Chapters----
   # icd9_pcs_chapters <- split(x = as.matrix(icd9_pcs_chapters[, -1]),
@@ -213,7 +211,7 @@ icd9cm_pcs_get_nonbillable <- function() {
   #                             })
   # save(icd9_pcs_chapters,
   #      file = "tmp/icd9_pcs_chapters.RData")
-  # 
+  #
   # # b. Sub-Chapters----
   # icd9_pcs_sub_chapters <- split(x = as.matrix(icd9_pcs_sub_chapters[, -1]),
   #                                f = factor(icd9_pcs_sub_chapters$sub_chapter,
@@ -226,7 +224,7 @@ icd9cm_pcs_get_nonbillable <- function() {
   #                             })
   # save(icd9_pcs_sub_chapters,
   #      file = "tmp/icd9_pcs_sub_chapters.RData")
-  
+
   return(icd9cm_pcs_nonbillable)
 }
 
@@ -235,7 +233,7 @@ icd9cm_merge_version_pcs <- function(icd9_version) {
   # Load data----
   lfile <- dir("original")
   lfile
-  
+
   icd9cm_pcs_billable <- list()
   foreach(i = 1:length(lfile)) %do% {
     icd9cm_pcs_billable[[i]] <- read.xlsx2(file = file.path("original",
@@ -248,22 +246,22 @@ icd9cm_merge_version_pcs <- function(icd9_version) {
   names(icd9cm_pcs_billable) <- substr(x = lfile,
                                       start = 4,
                                       stop = 5)
-  
+
   # # Save data as lists and share with Jack; ONLY RUN IT ONCE!----
   # head(icd9cm_pcs_billable[[1]])
   # save(icd9cm_pcs_billable,
   #      file = "tmp/icd9cm_pcs_billable.RData")
-  
+
   icd9cm_nonbillable <- icd9cm_pcs_get_nonbillable()
   icd9cm_billable_vx <- icd9cm_pcs_billable[[which(names(icd9cm_pcs_billable) == icd9_version)]]
-  
+
   icd9cm_billable_vx$major_code <- substr(icd9cm_billable_vx$code, 1, 2)
-  icd9cm_billable_vx$major_code[substr(icd9cm_billable_vx$code, 1, 1) == "E"] <- 
+  icd9cm_billable_vx$major_code[substr(icd9cm_billable_vx$code, 1, 1) == "E"] <-
     substr(icd9cm_billable_vx$code[substr(icd9cm_billable_vx$code, 1, 1) == "E"], 1, 4)
-  
+
   icd9cm_vx <- merge(icd9cm_nonbillable,
                      icd9cm_billable_vx,
                      by = "major_code")
-  
+
   return(icd9cm_vx)
 }

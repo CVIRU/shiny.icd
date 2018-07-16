@@ -1,0 +1,30 @@
+Package: shiny.icd
+Title: What the Package Does (one line, title case)
+Version: 0.0.0.9000
+Authors@R: 
+    c(person(given = "Davit Sargsyan",
+             role = c("cre", "aut"),
+             email = "ds752@rwjms.rutgers.edu"),
+      person(given = "Jack O. Wasey",
+             role = "aut",
+             email = "jack@jackwasey.com"))
+Description: What the package does (one paragraph).
+Depends: 
+    R (>= 3.5.0)
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Imports:
+    beepr,
+    icd,
+    icd.data,
+    shiny,
+    DT,
+    foreach,
+    data.table,
+    ggplot2,
+    utils
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.0.1
+Suggests: 
+    roxygen2
