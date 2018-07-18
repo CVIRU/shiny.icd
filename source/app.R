@@ -176,9 +176,10 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       tmp <- dtt[input$tbl2_rows_selected, ]
-      write.csv(tmp,
-                file,
-                row.names = FALSE)
+      write.table(tmp,
+                  file,
+                  row.names = FALSE,
+                  sep = "\t")
     }
   )
 
