@@ -1,0 +1,41 @@
+library(shinydashboard)
+library(shinythemes)
+
+ui <- dashboardPage(dashboardHeader(title = "Test",
+                                    dropdownMenu(type = "notifications",
+                                                 notificationItem(text = "5 new users today",
+                                                                  icon = icon("users")),
+                                                 notificationItem(text = "12 items delivered",
+                                                                  icon = icon("truck"),
+                                                                  status = "success"),
+                                                 notificationItem(text = "Server load at 86%",
+                                                                  icon = icon("exclamation-triangle"),
+                                                                  status = "warning"))),
+                    dashboardSidebar(sidebarMenu(menuItem(text = "Dashboard", 
+                                                          tabName = "dashboard", 
+                                                          icon = icon("dashboard")),
+                                                 menuItem(text = "Mapping", 
+                                                          tabName = "mapping", 
+                                                          icon = icon("th"),
+                                                          menuItem(text = "Sub-menu", 
+                                                                  tabName = "sub1", 
+                                                                  icon = icon("crow")),
+                                                          radioButtons(inputId = "dataset",
+                                                                       label = "Select List",
+                                                                       choices = c("AAA",
+                                                                                   "BBB"),
+                                                          checkboxInput("selectAll", "Select All"))),
+                                                 menuItem(text = "Convert", 
+                                                          tabName = "convert", 
+                                                          icon = icon("th")))),
+                    dashboardBody(tabItems(tabItem(tabName = "dashboard",
+                                                   h2("Hello1")),
+                                           tabItem(tabName = "mapping",
+                                                   h2("Hello2")),
+                                           tabItem(tabName = "sub1",
+                                                   h2("Hello2.1")),
+                                           tabItem(tabName = "convert",
+                                                   h2("Hello3"))))) 
+server <- function(input, output, session) {}
+
+shinyApp(ui, server)

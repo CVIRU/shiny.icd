@@ -3,6 +3,7 @@
 
 
 require(data.table)
+require(icd)
 
 # ICD-9----
 # Flat table of latest ICD-9-CM diagnosis codes
@@ -102,3 +103,19 @@ head(icd10_majors)
 length(icd10_pcs)
 nrow(icd10_pcs[[1]])
 head(icd10_pcs[[1]])
+
+# The following data sets were created in 'icd9-sg_get_data_v1.R' script----
+load("data/icd9_pcs_chapters.RData")
+icd9_pcs_chapters
+
+load("data/icd9_pcs_sub_chapters.RData")
+icd9_pcs_sub_chapters
+
+load("data/icd9cm_pcs_billable.RData")
+names(icd9cm_pcs_billable)
+head(icd9cm_pcs_billable[[which(names(icd9cm_pcs_billable) == 32)]])
+
+# Part II: pre-defined mappings----
+# a. Revised Elixhauser system----
+tmp <- icd9_map_ahrq
+tmp
