@@ -271,7 +271,7 @@ server <- function(input, output, session) {
                 multiple = TRUE)
   })
   
-  output$tblMap<- DT::renderDT({
+  output$tblMap <- DT::renderDT({
     validate(need(input$browseMap != "", ""))
     ne <- new.env()
     dt3 <- fread(input$browseMap$datapath)
