@@ -14,6 +14,9 @@
 1. ***app.R***: current version of the Shiny app    
 
 ## Daily Logs<a name="log"></a>
+### 09/15/2018
+* Completed conversion ICD-9 -> comorbidities; added a table and a download option.
+
 ### 07/21/2018
 * Updated packages **icd** and ** icd.data** on CVI computer (left) to versions  3.2.1 and 1.0.1 respectively. NOTE: Cannot update it on teh server - **devtools** needed but must be installed by the admin as teh server is missing some Linux packages.      
 * Switched to shiny Dashboard.          

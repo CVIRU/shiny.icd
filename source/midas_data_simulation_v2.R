@@ -18,23 +18,23 @@ date()
 require(data.table)
 require(ggplot2)
 
-# Part I: Load MIDAS15
-load("E:/MIDAS/midas15_clean.RData")
-midas15
-cnames <- colnames(midas15)
-cnames
-midas15$PRIME
-
-# Diagnoses----
-udx <- lapply(midas15[, DX1:DX9],
-              function(a){
-                unique(a)
-              })
-udx <- unique(do.call("c", udx))
-length(udx)
-# 16,102 unique ICD-9 codes. Save the list.
-save(udx,
-     file = "data/unique_dx.RData")
+# # Part I: Load MIDAS15
+# load("E:/MIDAS/midas15_clean.RData")
+# midas15
+# cnames <- colnames(midas15)
+# cnames
+# midas15$PRIME
+# 
+# # Diagnoses----
+# udx <- lapply(midas15[, DX1:DX9],
+#               function(a){
+#                 unique(a)
+#               })
+# udx <- unique(do.call("c", udx))
+# length(udx)
+# # 16,102 unique ICD-9 codes. Save the list.
+# save(udx,
+#      file = "data/unique_dx.RData")
 
 # Part II: Simulate data----
 # Skip Part I and load diagnoses----
@@ -43,7 +43,6 @@ load("data/unique_dx.RData")
 # Simulate demographics----
 N = 1000
 dt1 <- data.table(Patient_ID = 1:N,
-                  Record = 1:N,
                   # Birthday
                   patbdte = sample(seq(from = as.Date('1920/01/01'), 
                                        to = as.Date('1970/12/31'), 
@@ -72,6 +71,16 @@ summary(dt1)
 udx.keep <- sample(udx, 500)
 udx.keep
 
+# Add some common codes
+udx.keep <- c(udx.keep,
+              "4010",
+              "4011",
+              "4019",
+              "41000",
+              "41010",
+              "41012",
+              "41020")
+
 # Create K records-----
 K = 5000
 dxx <- list()
@@ -91,6 +100,7 @@ dxx
 dt2 <- data.table(Patient_ID = sample(x = 1:N, 
                                       size = K,
                                       replace = TRUE),
+                  Record = 1:nrow(dxx),
                   dxx)
 dt2 <- dt2[order(dt2$Patient_ID),]
 dt2

@@ -73,19 +73,20 @@ ui <- dashboardPage(dashboardHeader(title = "Shiny ICD",
                                                                 uiOutput(outputId = "subchapterIn"),
                                                                 uiOutput(outputId = "majorIn"),
                                                                 uiOutput(outputId = "dxIn"),
-                                                                checkboxInput("selectAll", "Select All")),
+                                                                checkboxInput(inputId = "selectAll",
+                                                                              label = "Select All"),
+                                                                br(),
+                                                                downloadButton(outputId = "downloadData",
+                                                                               label = "Download Selected Rows"),
+                                                                br(),
+                                                                downloadButton(outputId = "downloadMap",
+                                                                               label = "Download Map of Selected Rows")),
                                                    mainPanel(DT:: dataTableOutput("tbl"),
                                                              br(),
                                                              actionButton(inputId = "do",
                                                                           label = "Save Selection"),
                                                              br(),
-                                                             DT:: dataTableOutput("tbl2"),
-                                                             br(),
-                                                             downloadLink(outputId = "downloadData",
-                                                                          label = "Download Selected Rows"),
-                                                             br(),
-                                                             downloadLink(outputId = "downloadMap",
-                                                                          label = "Download Map of Selected Rows"))),
+                                                             DT:: dataTableOutput("tbl2"))),
                                            tabItem(tabName = "convert",
                                                    sidebarPanel(fileInput(inputId = "browseMap",
                                                                           label = "Select Mapping File",
@@ -94,8 +95,17 @@ ui <- dashboardPage(dashboardHeader(title = "Shiny ICD",
                                                                           label = "Select ICD Data File",
                                                                           multiple = FALSE),
                                                                 uiOutput(outputId = "idColIn"),
-                                                                uiOutput(outputId = "icdColsIn")),
-                                                   mainPanel(DT:: dataTableOutput("tblMap"),
+                                                                uiOutput(outputId = "icdColsIn"),
+                                                                br(),
+                                                                actionButton(inputId = "convert",
+                                                                             label = "Convert"),
+                                                                br(),
+                                                                br(),
+                                                                br(),
+                                                                downloadButton(outputId = "downloadComorb", 
+                                                                               label = "Download comorbidities")),
+                                                   mainPanel(DT::dataTableOutput("tblComorb"),
+                                                             DT:: dataTableOutput("tblMap"),
                                                              br(),
                                                              DT:: dataTableOutput("tblICD"))))))
 
@@ -125,6 +135,40 @@ server <- function(input, output, session) {
     dt1
   })
   
+  dtcmbf <- reactive({
+    validate(need(input$browseData != "", ""))
+    ne <- new.env()
+    fname <- load(file = input$browseData$datapath,
+                  envir = ne)
+    dt.dx <- ne[[fname]]
+    
+    validate(need(input$browseMap != "", ""))
+    ne <- new.env()
+    map <- fread(input$browseMap$datapath,
+                 colClasses = c("character"))
+    
+    l1 <- as.comorbidity_map(split(x = map$code,
+                                   f = map$sub_chapter))
+    
+    dtt <- list()
+    for(i in 1:length(input$icdIn)){
+      dtt[[i]] <- comorbid(x = dt.dx,
+                           map = l1,
+                           visit_name = input$idIn,
+                           icd_name = input$icdIn[i])
+    }
+    dt.comorb <- data.table(unique(dt.dx[, 
+                                         colnames(dt.dx) == input$idIn,
+                                         with = FALSE]),
+                            apply(Reduce("+",
+                                         dtt),
+                                  MARGIN = 2,
+                                  function(a){
+                                    a > 0
+                                  }))
+    dt.comorb
+  })
+  
   output$chapterIn <- renderUI({
     dt1 <- dt1f()
     selectInput(inputId = "chapter", 
@@ -138,14 +182,14 @@ server <- function(input, output, session) {
                 label = "Sub-chapter",
                 choices = unique(as.character(dt1$sub_chapter[dt1$chapter == input$chapter])))
   })
-
+  
   output$majorIn <- renderUI({
     dt1 <- dt1f()
     selectInput(inputId = "major",
                 label = "Major",
                 choices = unique(as.character(dt1$major[dt1$sub_chapter == input$subchapter])))
   })
-
+  
   output$dxIn <- renderUI({
     dt1 <- dt1f()
     selectInput(inputId = "dx",
@@ -164,7 +208,7 @@ server <- function(input, output, session) {
                         ""
                       })
   })
-
+  
   # Source: https://yihui.shinyapps.io/DT-rows/
   output$tbl <- DT::renderDT({
     dt0 <- dt0f()
@@ -174,7 +218,7 @@ server <- function(input, output, session) {
                   selection = list(mode = "multiple"),
                   rownames = FALSE)
   })
-
+  
   # Source: http://shiny.rstudio.com/articles/action-buttons.html
   observeEvent(input$do, {
     dt0 <- dt0f()
@@ -195,7 +239,7 @@ server <- function(input, output, session) {
                     rownames = FALSE)
     })
   })
-
+  
   # Source: https://shiny.rstudio.com/articles/download.html
   output$downloadData <- downloadHandler(
     filename = function() {
@@ -212,7 +256,7 @@ server <- function(input, output, session) {
                   sep = "\t")
     }
   )
-
+  
   # New comorbidity map
   output$downloadMap <- downloadHandler(
     filename = function() {
@@ -265,7 +309,7 @@ server <- function(input, output, session) {
     dt2 <- ne[[fname]]
     cnames <- colnames(dt2)
     # cnames <- as.character(input$browseData$datapath)
-    selectInput(inputId = "idIn",
+    selectInput(inputId = "icdIn",
                 label = "Select ICD Column(s)",
                 choices = cnames,
                 multiple = TRUE)
@@ -292,6 +336,31 @@ server <- function(input, output, session) {
                   selection = list(mode = "multiple"),
                   rownames = FALSE)
   })
+  
+  observeEvent(input$convert, {
+    output$tblComorb <- DT::renderDT({
+      dt.comorb <- dtcmbf()
+      
+      DT::datatable(head(dt.comorb, 20),
+                    options = list(pageLength = 10),
+                    selection = list(mode = "multiple"),
+                    rownames = FALSE)
+    })
+  })
+  
+  output$downloadComorb <- downloadHandler(
+    filename = function() {
+      paste("comorb_",
+            Sys.Date(),
+            ".RData",
+            sep = "")
+    },
+    content = function(file) {
+      dt.comorb <- dtcmbf()
+      save(dt.comorb,
+           file = file)
+    }
+  )
 }
 
 shinyApp(ui, server)
