@@ -15,6 +15,9 @@
 
 ## Daily Logs<a name="log"></a>
 ### 09/15/2018
+* Isolated convert button; added selection of ICD and diagnoses grouping from the mapping file (select columns)
+
+### 09/14/2018
 * Completed conversion ICD-9 -> comorbidities; added a table and a download option.
 
 ### 07/21/2018

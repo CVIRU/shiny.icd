@@ -16,7 +16,10 @@
 # |                           switched app to shinydashboard; added conversion tab   |
 # | ToDo: Keep selected diagnoses after switching to the next category               |
 # |----------------------------------------------------------------------------------|
-options(stringsAsFactors = FALSE)
+# Source: https://stackoverflow.com/questions/30894780/cant-read-an-rdata-fileinput
+
+options(stringsAsFactors = FALSE,
+        shiny.maxRequestSize = 1024^3)
 
 # devtools::install_github("jackwasey/icd")
 # devtools::install_github("jackwasey/icd.data")
@@ -91,9 +94,14 @@ ui <- dashboardPage(dashboardHeader(title = "Shiny ICD",
                                                    sidebarPanel(fileInput(inputId = "browseMap",
                                                                           label = "Select Mapping File",
                                                                           multiple = FALSE),
+                                                                br(),
+                                                                uiOutput(outputId = "mapIcdColIn"),
+                                                                uiOutput(outputId = "mapDiagColsIn"),
+                                                                br(),
                                                                 fileInput(inputId = "browseData",
                                                                           label = "Select ICD Data File",
                                                                           multiple = FALSE),
+                                                                br(),
                                                                 uiOutput(outputId = "idColIn"),
                                                                 uiOutput(outputId = "icdColsIn"),
                                                                 br(),
@@ -147,12 +155,12 @@ server <- function(input, output, session) {
     map <- fread(input$browseMap$datapath,
                  colClasses = c("character"))
     
-    l1 <- as.comorbidity_map(split(x = map$code,
-                                   f = map$sub_chapter))
+    l1 <- as.comorbidity_map(split(x = c(map[, input$mapIcdIn, with = FALSE][[1]]),
+                                   f = c(map[, input$mapDiagIn, with = FALSE][[1]])))
     
     dtt <- list()
     for(i in 1:length(input$icdIn)){
-      dtt[[i]] <- comorbid(x = dt.dx,
+      dtt[[i]] <- comorbid(x = dt.dx, 
                            map = l1,
                            visit_name = input$idIn,
                            icd_name = input$icdIn[i])
@@ -278,23 +286,38 @@ server <- function(input, output, session) {
     }
   )
   
-  # Convert ICD to comorbidities----
-  # output$idColIn <- renderUI({
-  #   selectInput(inputId = "idIn",
-  #               label = "Select ID Column",
-  #               choices = LETTERS[1:10],
-  #               multiple = FALSE)
-  # })
+  # Convert codes to comorbidities----
+  output$mapIcdColIn <- renderUI({
+    validate(need(input$browseMap != "", ""))
+    ne <- new.env()
+    dt3 <- fread(input$browseMap$datapath)
+    cnames <- colnames(dt3)
+    selectInput(inputId = "mapIcdIn",
+                label = "Select ICD Column",
+                choices = cnames,
+                multiple = FALSE)
+  })
+  
+  output$mapDiagColsIn <- renderUI({
+    validate(need(input$browseMap != "", ""))
+    ne <- new.env()
+    dt3 <- fread(input$browseMap$datapath)
+    cnames <- colnames(dt3)
+    selectInput(inputId = "mapDiagIn",
+                label = "Select Diagnosis Column",
+                choices = cnames,
+                multiple = FALSE)
+  })
+  
   output$idColIn <- renderUI({
     validate(need(input$browseData != "", ""))
     
-    # Source: https://stackoverflow.com/questions/30894780/cant-read-an-rdata-fileinput
+    
     ne <- new.env()
     fname <- load(file = input$browseData$datapath,
                   envir = ne)
     dt2 <- ne[[fname]]
     cnames <- colnames(dt2)
-    # cnames <- as.character(input$browseData$datapath)
     selectInput(inputId = "idIn",
                 label = "Select ID Column",
                 choices = cnames,
@@ -308,7 +331,6 @@ server <- function(input, output, session) {
                   envir = ne)
     dt2 <- ne[[fname]]
     cnames <- colnames(dt2)
-    # cnames <- as.character(input$browseData$datapath)
     selectInput(inputId = "icdIn",
                 label = "Select ICD Column(s)",
                 choices = cnames,
@@ -339,7 +361,7 @@ server <- function(input, output, session) {
   
   observeEvent(input$convert, {
     output$tblComorb <- DT::renderDT({
-      dt.comorb <- dtcmbf()
+      dt.comorb <- isolate(dtcmbf())
       
       DT::datatable(head(dt.comorb, 20),
                     options = list(pageLength = 10),
