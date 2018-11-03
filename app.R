@@ -29,14 +29,16 @@ require(data.table)
 require(DT)
 library(shinydashboard)
 library(shinythemes)
-source("icd9_dx_get_data_v1.R")
-source("icd9_sg_get_data_v1.R")
+source("source/icd9_dx_get_data_v1.R")
+source("source/icd9_sg_get_data_v1.R")
 
 # # TEST: bypass user interface!
-# source("source/icd9_dx_get_data_v1.R")
-# source("source/icd9_sg_get_data_v1.R")
 # input <- list()
+# # Diagnoses----
 # dt1 <- icd9cm_merge_version_dx(32)
+# # Procedures----
+# dt1 <- icd9cm_merge_version_pcs(32)
+# # individual nodes----
 # input$chapter = unique(as.character(dt1$chapter))[4]
 # input$subchapter = unique(as.character(dt1$sub_chapter[dt1$chapter == input$chapter]))[1]
 # input$major = unique(as.character(dt1$major[dt1$sub_chapter == input$subchapter]))[2]
