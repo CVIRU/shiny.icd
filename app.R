@@ -25,10 +25,13 @@ options(stringsAsFactors = FALSE,
 # devtools::install_github("jackwasey/icd.data")
 require(shiny)
 require(icd)
+require(icd.data)
 require(data.table)
 require(DT)
 library(shinydashboard)
 library(shinythemes)
+require(xlsx)
+require(foreach)
 source("source/icd9_dx_get_data_v1.R")
 source("source/icd9_sg_get_data_v1.R")
 
@@ -80,6 +83,9 @@ ui <- dashboardPage(dashboardHeader(title = "Shiny ICD",
                                                                 uiOutput(outputId = "dxIn"),
                                                                 checkboxInput(inputId = "selectAll",
                                                                               label = "Select All"),
+                                                                textInput(inputId = "comorb",
+                                                                          label = "Comorbidity",
+                                                                          value = ""),
                                                                 br(),
                                                                 downloadButton(outputId = "downloadData",
                                                                                label = "Download Selected Rows"),
@@ -130,6 +136,8 @@ server <- function(input, output, session) {
       dt0 <- icd9cm_merge_version_pcs(input$icd9_version)
     }
     dt0$short_desc <- NULL
+    dt0 <- data.table(comorb = input$comorb,
+                      dt0)
     dt0
   })
   
