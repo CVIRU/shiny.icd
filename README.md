@@ -1,5 +1,5 @@
 ##  Project: Shiny app using package 'icd'
-### Authors: Davit Sargsyan, Yi Yang, Seunghoon Jung
+### Authors: Davit Sargsyan,Mohammed Fahim, Yi Yang, Seunghoon Jung
 ### Created: 04/06/2018  
 
 ---
